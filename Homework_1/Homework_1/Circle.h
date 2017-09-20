@@ -1,9 +1,6 @@
 #pragma once
 #ifndef CIRCLE_PHYSICS
 #define CIRCLE_PHYSICS
-#include <gl/Gl.h>
-#include <gl/glu.h>
-#include <gl/glut.h>
 
 class Circle
 {
@@ -11,7 +8,7 @@ class Circle
 private:
 
 	struct GLfloatPoint2D {
-		GLfloat x, y;
+		float x, y;
 	};
 
 	double radius;
@@ -33,7 +30,9 @@ public:
 	double GetVelocity();
 	void SetVelocity(double velocity);
 	void PauseVelocity();
-	void SetCenter(GLfloat x,GLfloat y);
+	void SetCenter(float x, float y);
+	float GetCenterX();
+	float GetCenterY();
 
 };
 

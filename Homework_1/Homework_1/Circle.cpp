@@ -4,9 +4,11 @@
 
 Circle::Circle()
 {
-	this->radius = 1;
-	this->mass = radius*radius*radius;
-	this->velocity = 1;
+	radius = 50;
+	mass = radius*radius*radius;
+	velocity = 1;
+	SetCenter(0, 0);
+	pVelocity = 0;
 }
 
 
@@ -19,10 +21,10 @@ double Circle::GetRadius()
 	return radius;
 }
 
-void Circle::SetRadius(double radius)
+void Circle::SetRadius(double newRadius)
 {
-	this->radius = radius;
-	this->mass = radius*radius*radius;
+	radius = newRadius;
+	mass = radius*radius*radius;
 }
 
 double Circle::GetMass()
@@ -35,19 +37,29 @@ double Circle::GetVelocity()
 	return velocity;
 }
 
-void Circle::SetVelocity(double velocity)
+void Circle::SetVelocity(double newVelocity)
 {
-	this->velocity=velocity;
+	velocity = newVelocity;
 }
 
 void Circle::PauseVelocity()
 {
-	this->pVelocity = velocity;
-	this->velocity = 0;
+	pVelocity = velocity;
+	velocity = 0;
 }
 
-void Circle::SetCenter(GLfloat x, GLfloat y)
+void Circle::SetCenter(float x, float y)
 {
 	center.x = x;
 	center.y = y;
+}
+
+float Circle::GetCenterX()
+{
+	return center.x;
+}
+
+float Circle::GetCenterY()
+{
+	return center.y;
 }
