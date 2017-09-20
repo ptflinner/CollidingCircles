@@ -6,9 +6,9 @@ Circle::Circle()
 {
 	radius = 50;
 	mass = radius*radius*radius;
-	velocity = 1;
+	velocity.SetCoordinates(0,0);
 	SetCenter(0, 0);
-	pVelocity = 0;
+	pVelocity.SetCoordinates(0,0);
 }
 
 
@@ -32,34 +32,41 @@ double Circle::GetMass()
 	return mass;
 }
 
-double Circle::GetVelocity()
+Vector Circle::GetVelocity()
 {
 	return velocity;
 }
 
-void Circle::SetVelocity(double newVelocity)
+void Circle::SetVelocity(Vector newVelocity)
 {
-	velocity = newVelocity;
+	velocity.SetX(newVelocity.GetX());
+	velocity.SetY(newVelocity.GetY());
 }
 
 void Circle::PauseVelocity()
 {
+	Vector z;
 	pVelocity = velocity;
-	velocity = 0;
+	velocity = z;
 }
 
 void Circle::SetCenter(float x, float y)
 {
-	center.x = x;
-	center.y = y;
+	center.SetX(x);
+	center.SetY(y);
 }
 
 float Circle::GetCenterX()
 {
-	return center.x;
+	return center.GetX();
 }
 
 float Circle::GetCenterY()
 {
-	return center.y;
+	return center.GetY();
+}
+
+void Circle::MoveCoordinate()
+{
+	SetCenter((center.GetX() + velocity.GetX()), (center.GetY() + velocity.GetY()));
 }

@@ -50,11 +50,12 @@ void myDisplay(void)
 
 		glBegin(GL_POLYGON);
 		for (double t = 0; t < 1; t += .01) {
-			float y = circleArray[i].GetCenterY() + circleArray[i].GetRadius()*sin(2 * PI*t);
 			float x = circleArray[i].GetCenterX() + circleArray[i].GetRadius()*cos(2 * PI*t);
+			float y = circleArray[i].GetCenterY() + circleArray[i].GetRadius()*sin(2 * PI*t);
 			cout << "X: " << x << " Y: " << y << endl;
 			glVertex2f(x, y);
 		}
+		circleArray[i].MoveCoordinate();
 		glEnd();
 	}
 
