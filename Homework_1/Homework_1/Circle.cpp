@@ -1,10 +1,10 @@
 #include "Circle.h"
-
+#include <iostream>
 
 
 Circle::Circle()
 {
-	radius = 50;
+	radius = 10;
 	mass = radius*radius*radius;
 	velocity.SetCoordinates(0,0);
 	SetCenter(0, 0);
@@ -68,5 +68,7 @@ float Circle::GetCenterY()
 
 void Circle::MoveCoordinate()
 {
+	double newX = (center.GetX() + velocity.GetX());
+	double newY = (center.GetY() + velocity.GetY());
 	SetCenter((center.GetX() + velocity.GetX()), (center.GetY() + velocity.GetY()));
 }

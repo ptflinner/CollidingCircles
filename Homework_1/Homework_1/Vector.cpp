@@ -2,6 +2,12 @@
 
 
 
+Vector::Vector(float x, float y)
+{
+	this->x = x;
+	this->y = y;
+}
+
 Vector::Vector()
 {
 	x = 0;
