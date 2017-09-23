@@ -17,6 +17,7 @@ private:
 
 public:
 	Circle();
+	Circle(float x,float y, float vx,float vy,float r);
 	~Circle();
 	double GetRadius();
 	void SetRadius(double radius);
@@ -25,8 +26,10 @@ public:
 	void SetVelocity(Vector newVelocity);
 	void PauseVelocity();
 	void SetCenter(float x, float y);
+	void SetCenter(Vector vector);
 	float GetCenterX();
 	float GetCenterY();
+	Vector GetCenter();
 	void MoveCoordinate();
 };
 

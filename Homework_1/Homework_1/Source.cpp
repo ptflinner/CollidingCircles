@@ -6,22 +6,24 @@
 
 using namespace std;
 
+/******PROTOTYPES***********/
 void InitializeCircles();
 void myInit(void);
 void CheckCollision(Circle &circle);
 void myIdle();
 void myDisplay(void);
 Vector FindUnitVector(Circle circleA, Circle circleB);
-double FindDistance(Circle circleA, Circle circleB);
-double FindKValue(float unitVector, Circle circleA, Circle circleB);
-Vector FindVelocityOne(Vector unitVector, Circle circle, double k);
-Vector FindVelocityTwo(Vector unitVector, Circle circle, double k);
+float FindDistance(Circle circleA, Circle circleB);
+float FindKValue(Vector unitVector, Circle circleA, Circle circleB);
+Vector FindVelocityOne(Vector unitVector, Circle circle, float k,float mass);
+Vector FindVelocityTwo(Vector unitVector, Circle circle, float k,float mass);
 Vector NormalizeVector(Vector normalize);
-Vector ReflectVector(Circle circle);
+Vector ReflectVector(Vector velocity,Vector n);
 
 //<<<<<<<<<<<<<<<<<<<<<<<< main >>>>>>>>>>>>>>>>>>>>>>
 void main(int argc, char **argv)
 {
+	/*
 	glutInit(&argc, argv);						 // initialize the toolkit
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB); // set the display mode
 	glutInitWindowSize(screenWidth, screenHeight);				 // set the window size
@@ -32,7 +34,25 @@ void main(int argc, char **argv)
 	glutIdleFunc(myIdle);						 // register idle callback function
 
 	myInit();
-	glutMainLoop(); 							 // go into a perpetual loop
+	glutMainLoop();
+	// go into a perpetual loop
+*/
+	
+	Vector one(120, 320);
+	Vector two(10, 10);
+	Circle five(5,5,3,3,1);
+	Circle four(2,2,0,0,2);
+	Vector unitV = FindUnitVector(four, five);
+	float three = 5.0;
+	int now;	
+	float k = FindKValue(unitV, four, five);
+	one = (FindVelocityOne(unitV, four, k, five.GetMass()));
+	two = (FindVelocityTwo(unitV, five, k, four.GetMass()));
+	cout << k << endl;
+	cout << one << endl;
+	cout << two << endl;
+
+	
 }
 //<<<<<<<<<<<<<<<<<<<<<<< Initializer >>>>>>>>>>>>>>>>>>>>
 void myInit(void)
@@ -60,13 +80,14 @@ void InitializeCircles() {
 void CheckCollision(Circle &circle) {
 	float x= circle.GetVelocity().GetX();
 	float y=circle.GetVelocity().GetY();
+
 	if (circle.GetCenterX() + circle.GetRadius() >= screenWidth/2) {
 		if (DEBUG) {
 			cout << "REFLECT RIGHT" << endl;
 			cout << "OLD VELOCITY: " << x << " " << y << endl;
 		}
 		circle.SetCenter(screenWidth/2 - circle.GetRadius(), circle.GetCenterY());
-		circle.SetVelocity(Vector(-x,y));
+		circle.SetVelocity(ReflectVector(circle.GetVelocity(),Vector(screenWidth/2,0)));
 	}
 	if (circle.GetCenterX() - circle.GetRadius() <= -screenWidth/2) {
 		if (DEBUG) {
@@ -74,7 +95,7 @@ void CheckCollision(Circle &circle) {
 			cout << "OLD VELOCITY: " << x << " " << y << endl;
 		}
 		circle.SetCenter(-screenWidth/2 + circle.GetRadius(), circle.GetCenterY());
-		circle.SetVelocity(Vector(-x,y));
+		circle.SetVelocity(ReflectVector(circle.GetVelocity(), Vector(-screenWidth / 2, 0)));
 	}
 	if (circle.GetCenterY() + circle.GetRadius() >= screenHeight/2) {
 		if (DEBUG) {
@@ -82,7 +103,7 @@ void CheckCollision(Circle &circle) {
 			cout << "OLD VELOCITY: " << x << " " << y << endl;
 		}
 		circle.SetCenter(circle.GetCenterX(),screenHeight / 2 - circle.GetRadius());
-		circle.SetVelocity(Vector(x, -y));
+		circle.SetVelocity(ReflectVector(circle.GetVelocity(), Vector(0,screenHeight / 2)));
 	}
 	if (circle.GetCenterY() - circle.GetRadius() <= -screenHeight/2) {
 		if (DEBUG) {
@@ -90,7 +111,7 @@ void CheckCollision(Circle &circle) {
 			cout << "OLD VELOCITY: " << x << " " << y << endl;
 		}
 		circle.SetCenter(circle.GetCenterX(), -screenHeight / 2 + circle.GetRadius());
-		circle.SetVelocity(Vector(x, -y));
+		circle.SetVelocity(ReflectVector(circle.GetVelocity(), Vector(0,-screenHeight/ 2)));
 	}
 }
 
@@ -108,7 +129,7 @@ void myIdle()
 // the redraw function
 void myDisplay(void)
 {
-	Sleep(10);
+	Sleep(1);
 	glClear(GL_COLOR_BUFFER_BIT);		// clear the screen 
 
 	for (int i = 0; i < numberOfBalls; i++) {
@@ -127,46 +148,79 @@ void myDisplay(void)
 
 Vector FindUnitVector(Circle circleA, Circle circleB) {
 	Vector unitVector;
-	double distance;
+	Vector numerator;
+	float distance;
 
 	distance = FindDistance(circleA, circleB);
-	unitVector.SetX(1);
-	unitVector.SetY(1);
-
+	numerator = circleB.GetCenter() - circleA.GetCenter();
+	unitVector = numerator / distance;
 	return unitVector;
 }
 
-double FindDistance(Circle circleA, Circle circleB) {
-	double cAX = 1;
-	double cAY = 1;
-	double cBX = 1;
-	double cBY = 1;
+float FindDistance(Circle circleA, Circle circleB) {
+	double cAX = circleA.GetCenterX();
+	double cAY = circleA.GetCenterY();
+	double cBX = circleB.GetCenterX();
+	double cBY = circleB.GetCenterY();
 	double distance;
 	distance = sqrtf(pow((cBX - cAX), 2) + (pow(cBY - cAY, 2)));
 
 	return distance;
 }
 
-double FindKValue(float unitVector, Circle circleA, Circle circleB) {
-	return 0.0;
+float FindKValue(Vector unitVector, Circle circleA, Circle circleB) {
+	float k = 0.0;
+	float v1 = 0.0;
+	float v2 = 0.0;
+	float mass = 0.0;
+	float A1= circleA.GetVelocity()*unitVector;
+	float A2= circleB.GetVelocity()*unitVector;
+
+	if(DEBUG)cout << "A1: " << A1 << " A2: " << A2 << endl;
+	mass = circleA.GetMass() + circleB.GetMass();
+	if(DEBUG)cout << "Mass: " << mass << endl;
+	k = 2 * (A1-A2) / mass;
+	if(DEBUG)cout << "k: " << k << endl;
+	return k;
 }
 
-Vector FindVelocityOne(Vector unitVector, Circle circle, double k) {
+Vector FindVelocityOne(Vector unitVector, Circle circle, float k,float mass) {
 	Vector newV;
+	Vector rhs = unitVector*mass*k;
+	newV = circle.GetVelocity() - rhs;
 	return newV;
 }
 
-Vector FindVelocityTwo(Vector unitVector, Circle circle, double k) {
+Vector FindVelocityTwo(Vector unitVector, Circle circle, float k,float mass) {
 	Vector newV;
+	Vector rhs = unitVector*mass*k;
+	newV = circle.GetVelocity() + rhs;
 	return newV;
 }
 
 Vector NormalizeVector(Vector normalize)
 {
-	return Vector();
+	Vector normalized;
+	float magnitude;
+	magnitude = sqrt(pow(normalize.GetX(),2) + pow(normalize.GetY(),2));
+	normalized.SetX(normalize.GetX() / magnitude);
+	normalized.SetY(normalize.GetY() / magnitude);
+	if(DEBUG)cout << "NORMALIZED: " << normalized.GetX() << " " << normalized.GetY() << endl;
+	return normalized;
 }
 
-Vector ReflectVector(Circle circle)
+Vector ReflectVector(Vector velocity,Vector n)
 {
-	return Vector();
+	Vector r;
+	Vector a;
+	float base;
+	
+	base = velocity*NormalizeVector(n);
+	if(DEBUG)cout << "BASE: " << base << endl;
+	base = base * 2;
+	if(DEBUG)cout << "BASE2: " << base << endl;
+	a = NormalizeVector(n)*base;
+	if(DEBUG)cout << "A: " << a.GetX() << " " << a.GetY() << endl;
+	r = velocity - a;
+	return r;
 }

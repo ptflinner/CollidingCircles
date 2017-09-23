@@ -11,6 +11,14 @@ Circle::Circle()
 	pVelocity.SetCoordinates(0,0);
 }
 
+Circle::Circle(float x, float y, float vx, float vy, float r)
+{
+	center.SetCoordinates(x, y);
+	velocity.SetCoordinates(vx, vy);
+	radius = r;
+	mass = radius*radius*radius;
+}
+
 
 Circle::~Circle()
 {
@@ -56,6 +64,12 @@ void Circle::SetCenter(float x, float y)
 	center.SetY(y);
 }
 
+void Circle::SetCenter(Vector vector)
+{
+	center.SetX(vector.GetX());
+	center.SetY(vector.GetY());
+}
+
 float Circle::GetCenterX()
 {
 	return center.GetX();
@@ -64,6 +78,11 @@ float Circle::GetCenterX()
 float Circle::GetCenterY()
 {
 	return center.GetY();
+}
+
+Vector Circle::GetCenter()
+{
+	return center;
 }
 
 void Circle::MoveCoordinate()

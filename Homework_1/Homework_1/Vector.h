@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+
 class Vector
 {
 private:
@@ -12,5 +14,15 @@ public:
 	void SetCoordinates(float x,float y);
 	float GetX();
 	float GetY();
+
+	//Operator Overload
+	Vector operator-(Vector& rhs);
+	Vector operator+(Vector& rhs);
+	Vector operator*(float& rhs);
+	Vector operator/(float& rhs);
+	float operator*(Vector& rhs);
+	void operator=(Vector& rhs);
+	
+	friend std::ostream& operator<<(std::ostream& os,Vector& rhs);
 };
 

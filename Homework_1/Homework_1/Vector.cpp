@@ -44,3 +44,53 @@ float Vector::GetY()
 {
 	return y;
 }
+
+Vector Vector::operator-( Vector & rhs)
+{
+	Vector subtracted;
+	subtracted.SetX(x - rhs.GetX());
+	subtracted.SetY(y - rhs.GetY());
+	return subtracted;
+}
+
+Vector Vector::operator+(Vector & rhs)
+{
+	Vector added;
+	added.SetX(x + rhs.GetX());
+	added.SetY(y + rhs.GetY());
+	return added;
+}
+
+float Vector::operator*(Vector & rhs)
+{
+	float dot;
+
+	dot = x*rhs.GetX() + y*rhs.GetY();
+	return dot;
+}
+
+Vector Vector::operator*(float& rhs)
+{
+	Vector newVector;
+	newVector.SetX(x*rhs);
+	newVector.SetY(y*rhs);
+
+	return newVector;
+}
+
+void Vector::operator=(Vector & rhs)
+{
+	x = rhs.GetX();
+	y = rhs.GetY();
+}
+
+Vector Vector::operator/(float & rhs)
+{
+	return Vector(x/rhs,y/rhs);
+}
+
+std::ostream & operator<<(std::ostream & os, Vector & rhs)
+{
+	os << rhs.GetX()<< " " << rhs.GetY() << std::endl;
+	return os;
+}
