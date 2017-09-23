@@ -24,13 +24,14 @@ public:
 	double GetMass();
 	Vector GetVelocity();
 	void SetVelocity(Vector newVelocity);
+	void SetVelocity(float x,float y);
 	void PauseVelocity();
 	void SetCenter(float x, float y);
 	void SetCenter(Vector vector);
 	float GetCenterX();
 	float GetCenterY();
 	Vector GetCenter();
-	void MoveCoordinate();
+	void MoveCoordinate(float t);
 };
 
 #endif

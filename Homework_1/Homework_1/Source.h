@@ -9,25 +9,22 @@
 #include <gl/glu.h>
 #include <gl/glut.h>
 #include <math.h>
+#include <ctime>
 #include "Circle.h"
-
-struct GLintPoint2D {
-	int x, y;
-};
-
-struct GLfloatPoint2D {
-	float x, y;
-};
-
 
 //Global Variables
 
-Circle circleArray[5];
+Circle *circleArray[5];
+bool filled[5];
+int selected;
 int numberOfBalls;
+
 const int screenHeight = 480;
 const int screenWidth = 640;
 const bool DEBUG = false;
+float speedUp = 15;
+float speedDown=0.25;
 // Initial values
-double delta = 0.0;
+float delta;
 
 #endif
