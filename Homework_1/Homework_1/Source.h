@@ -22,6 +22,7 @@ int numberOfBalls;
 const int screenHeight = 480;
 const int screenWidth = 640;
 const bool DEBUG = false;
+bool pause;
 float speedUp = 15;
 float speedDown=0.25;
 // Initial values

@@ -13,16 +13,17 @@ void CheckCollisionWall(Circle* circle);
 void CheckCollisionBall(Circle* circle,int ballNumber);
 void myIdle();
 void myDisplay(void);
-Vector FindUnitVector(Circle circleA, Circle circleB);
-float FindDistance(Circle circleA, Circle circleB);
-float FindKValue(Vector unitVector, Circle circleA, Circle circleB);
-Vector FindVelocityOne(Vector unitVector, Circle circle, float k,float mass);
-Vector FindVelocityTwo(Vector unitVector, Circle circle, float k,float mass);
+Vector FindUnitVector(Circle *circleA, Circle *circleB);
+float FindDistance(Circle *circleA, Circle *circleB);
+float FindKValue(Vector unitVector, Circle *circleA, Circle *circleB);
+Vector FindVelocityOne(Vector unitVector, Circle *circle, float k,float mass);
+Vector FindVelocityTwo(Vector unitVector, Circle *circle, float k,float mass);
 Vector NormalizeVector(Vector normalize);
 Vector ReflectVector(Vector velocity,Vector n);
 void MyKeyboard(unsigned char theKey,int mouseX,int mouseY);
 void MySpecialKeyboard(int theKey, int mouseX, int mouseY);
 void myMouse(int button, int state, int x, int y);
+void Collision(Circle *circleA,Circle *circleB);
 
 //<<<<<<<<<<<<<<<<<<<<<<<< main >>>>>>>>>>>>>>>>>>>>>>
 void main(int argc, char **argv)
@@ -35,7 +36,7 @@ void main(int argc, char **argv)
 	glutCreateWindow("Circle Physics");			 // open the screen window(with its exciting title)
 	glutKeyboardFunc(MyKeyboard);
 	glutSpecialFunc(MySpecialKeyboard);
-	//glutMouseFunc(myMouse);
+	glutMouseFunc(myMouse);
 	glutDisplayFunc(myDisplay);					 // register the redraw function
 	glutIdleFunc(myIdle);						 // register idle callback function
 
@@ -66,6 +67,7 @@ void myInit(void)
 	InitializeCircles();
 	srand((unsigned)time(0));
 	delta = .5;
+	pause = true;
 	glClearColor(1.0, 1.0, 1.0, 0.0);		
 	glColor3f(0.0f, 0.0f, 1.0f);			 
 	glPointSize(4.0);						
@@ -99,6 +101,7 @@ void MyKeyboard(unsigned char theKey, int mouseX, int mouseY) {
 			vy = rand() % 5 + 1;
 			radius = rand() % 50 + 1;
 			circleArray[numberOfBalls] = new Circle(x, y, vx, vy, radius);
+			filled[numberOfBalls] = true;
 			numberOfBalls++;
 		}
 		break;
@@ -188,14 +191,62 @@ void MySpecialKeyboard(int theKey, int mouseX, int mouseY) {
 
 void myMouse(int button, int state, int x, int y) {
 
+	x = x - (screenWidth / 2);
+	y = (screenHeight / 2 - y);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		if(DEBUG)cout << "X: " << x   << " Y: " <<  y << endl;
+		
 		for (int i = 0; i < numberOfBalls; i++) {
+			float newX = (circleArray[i]->GetCenterX() - x);
+			float newY = (circleArray[i]->GetCenterY() - y);
+			
+			if(DEBUG)cout << "BALL VALUES: " << endl << "X: "<< circleArray[i]->GetCenterX() <<" Y: " << circleArray[i]->GetCenterY() << endl;
+			if(DEBUG)cout << "NX: " << newX << " NY: " << newY << endl;
+			
+			float radiusOne = 0;
+			float radiusTwo = circleArray[i]->GetRadius();
+			
+			if(DEBUG)cout << newX << " " << newY<<" "<< sqrt(newX* newX + newY *newY) <<" "<< radiusOne + radiusTwo <<endl;
+			
+			if (sqrt(newX* newX + newY *newY) < (radiusOne + radiusTwo))
+			{
+				cout << "COLLISION" << endl;
 
+			}
 		}
 	}
 
+	float vx;
+	float vy;
+	float radius;
+	if (button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN) {
+		if (numberOfBalls < 5) {
+			vx = rand() % 5 - 5;
+			vy = rand() % 5 - 5;
+			radius = rand() % 50 + 10;
+			circleArray[numberOfBalls] = new Circle(x, y, vx, vy, radius);
+			filled[numberOfBalls] = true;
+			numberOfBalls++;
+		}
+	}
+
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+		pause = !pause;
+	}
 	glutPostRedisplay();
 
+}
+
+void Collision(Circle* circleA, Circle* circleB)
+{
+	Vector unit=FindUnitVector(circleA,circleB);
+	float k = FindKValue(unit, circleA, circleB);
+	circleA->SetVelocity(FindVelocityOne(unit, circleA, k, circleB->GetMass()));
+	circleB->SetVelocity(FindVelocityTwo(unit, circleB, k, circleA->GetMass()));
+	if (!pause) {
+		circleA->SetCenter(circleA->GetCenterX() + circleA->GetVelocity().GetX(), circleA->GetCenterY() + circleA->GetVelocity().GetY());
+		circleB->SetCenter(circleB->GetCenterX() + circleB->GetVelocity().GetX(), circleB->GetCenterY() + circleB->GetVelocity().GetY());
+	}
 }
 
 void CheckCollisionWall(Circle* circle) {
@@ -238,13 +289,23 @@ void CheckCollisionWall(Circle* circle) {
 
 void CheckCollisionBall(Circle* circle,int ballNumber)
 {
-	for (int i = 0; i < numberOfBalls; i++) {
-		for (double t = 0; t < 1; t += .01) {
-			float x = circleArray[i]->GetCenterX() + circleArray[i]->GetRadius()*cos(2 * PI*t);
-			float y = circleArray[i]->GetCenterY() + circleArray[i]->GetRadius()*sin(2 * PI*t);
+	for (int j = 0; j < numberOfBalls; j++) {
+		if (j != ballNumber) {
+			float x = (circleArray[j]->GetCenterX() - circleArray[ballNumber]->GetCenterX());
+			float y = (circleArray[j]->GetCenterY() - circleArray[ballNumber]->GetCenterY());
+			float radiusOne = circleArray[ballNumber]->GetRadius();
+			float radiusTwo = circleArray[j]->GetRadius();
+			if (sqrt(x* x + y *y) < (radiusOne + radiusTwo))
+			{
+				if (DEBUG) {
+					cout << "COLLISION" << endl;
+				}
+				//MoveCenter(circleArray[ballNumber], circleArray[j]);
+				Collision(circleArray[ballNumber], circleArray[j]);
 
-			float x2 = circle->GetCenterX() + circle->GetRadius()*cos(2 * PI*t);
-			float y2 = circle->GetCenterY() + circle->GetRadius()*sin(2 * PI*t);
+				if(DEBUG)cout << "NEW VELOCITY C1: " << circleArray[ballNumber]->GetVelocity();
+				if(DEBUG)cout << "NEW VELOCITY C2: " << circleArray[j]->GetVelocity();
+			}
 		}
 	}
 }
@@ -253,8 +314,9 @@ void myIdle()
 {	
 	for (int i = 0; i < numberOfBalls; i++) {
 		CheckCollisionWall(circleArray[i]);
+		if(DEBUG)cout << "NEW VELOCITY C"<<i<<": " << circleArray[i]->GetVelocity();
 		CheckCollisionBall(circleArray[i], i);
-		circleArray[i]->MoveCoordinate(delta);
+		if(!pause)	circleArray[i]->MoveCoordinate(delta);
 	}
 	glutPostRedisplay();
 }
@@ -263,7 +325,7 @@ void myIdle()
 // the redraw function
 void myDisplay(void)
 {
-	Sleep(1);
+	Sleep(10);
 	glClear(GL_COLOR_BUFFER_BIT);		// clear the screen 
 
 	for (int i = 0; i < numberOfBalls; i++) {
@@ -281,55 +343,55 @@ void myDisplay(void)
 	glutSwapBuffers();
 }
 
-Vector FindUnitVector(Circle circleA, Circle circleB) {
+Vector FindUnitVector(Circle *circleA, Circle *circleB) {
 	Vector unitVector;
 	Vector numerator;
 	float distance;
 
 	distance = FindDistance(circleA, circleB);
-	numerator = circleB.GetCenter() - circleA.GetCenter();
+	numerator = circleB->GetCenter() - circleA->GetCenter();
 	unitVector = numerator / distance;
 	return unitVector;
 }
 
-float FindDistance(Circle circleA, Circle circleB) {
-	double cAX = circleA.GetCenterX();
-	double cAY = circleA.GetCenterY();
-	double cBX = circleB.GetCenterX();
-	double cBY = circleB.GetCenterY();
+float FindDistance(Circle *circleA, Circle* circleB) {
+	double cAX = circleA->GetCenterX();
+	double cAY = circleA->GetCenterY();
+	double cBX = circleB->GetCenterX();
+	double cBY = circleB->GetCenterY();
 	double distance;
 	distance = sqrtf(pow((cBX - cAX), 2) + (pow(cBY - cAY, 2)));
 
 	return distance;
 }
 
-float FindKValue(Vector unitVector, Circle circleA, Circle circleB) {
+float FindKValue(Vector unitVector, Circle *circleA, Circle *circleB) {
 	float k = 0.0;
 	float v1 = 0.0;
 	float v2 = 0.0;
 	float mass = 0.0;
-	float A1= circleA.GetVelocity()*unitVector;
-	float A2= circleB.GetVelocity()*unitVector;
+	float A1= circleA->GetVelocity()*unitVector;
+	float A2= circleB->GetVelocity()*unitVector;
 
 	if(DEBUG)cout << "A1: " << A1 << " A2: " << A2 << endl;
-	mass = circleA.GetMass() + circleB.GetMass();
+	mass = circleA->GetMass() + circleB->GetMass();
 	if(DEBUG)cout << "Mass: " << mass << endl;
 	k = 2 * (A1-A2) / mass;
 	if(DEBUG)cout << "k: " << k << endl;
 	return k;
 }
 
-Vector FindVelocityOne(Vector unitVector, Circle circle, float k,float mass) {
+Vector FindVelocityOne(Vector unitVector, Circle *circle, float k,float mass) {
 	Vector newV;
 	Vector rhs = unitVector*mass*k;
-	newV = circle.GetVelocity() - rhs;
+	newV = circle->GetVelocity() - rhs;
 	return newV;
 }
 
-Vector FindVelocityTwo(Vector unitVector, Circle circle, float k,float mass) {
+Vector FindVelocityTwo(Vector unitVector, Circle *circle, float k,float mass) {
 	Vector newV;
 	Vector rhs = unitVector*mass*k;
-	newV = circle.GetVelocity() + rhs;
+	newV = circle->GetVelocity() + rhs;
 	return newV;
 }
 

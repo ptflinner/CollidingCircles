@@ -97,3 +97,4 @@ void Circle::MoveCoordinate(float t)
 	double newY = (center.GetY() + velocity.GetY()*t);
 	SetCenter((center.GetX() + velocity.GetX()), (center.GetY() + velocity.GetY()));
 }
+
