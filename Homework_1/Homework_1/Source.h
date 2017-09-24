@@ -25,6 +25,8 @@ const bool DEBUG = false;
 bool pause;
 float speedUp = 15;
 float speedDown=0.25;
+float maxRadius = 100;
+float minRadius = 10;
 // Initial values
 float delta;
 
