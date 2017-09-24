@@ -1,3 +1,8 @@
+//Patrick Flinner
+//304607711
+//Date: 9/24/2017
+//Assignment: Homework 1
+
 #pragma once
 #include <iostream>
 

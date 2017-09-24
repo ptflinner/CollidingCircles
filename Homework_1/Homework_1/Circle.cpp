@@ -1,3 +1,8 @@
+//Patrick Flinner
+//304607711
+//Date: 9/24/2017
+//Assignment: Homework 1
+
 #include "Circle.h"
 #include <iostream>
 
@@ -8,7 +13,6 @@ Circle::Circle()
 	mass = radius*radius*radius;
 	velocity.SetCoordinates(0,0);
 	SetCenter(0, 0);
-	pVelocity.SetCoordinates(0,0);
 }
 
 Circle::Circle(float x, float y, float vx, float vy, float r)
@@ -57,13 +61,6 @@ void Circle::SetVelocity(float x, float y)
 	SetVelocity(v);
 }
 
-void Circle::PauseVelocity()
-{
-	Vector z;
-	pVelocity = velocity;
-	velocity = z;
-}
-
 void Circle::SetCenter(float x, float y)
 {
 	center.SetX(x);
@@ -91,10 +88,11 @@ Vector Circle::GetCenter()
 	return center;
 }
 
+//Moves the coordinate based on time and velocity
 void Circle::MoveCoordinate(float t)
 {
-	double newX = (center.GetX() + velocity.GetX()*t);
-	double newY = (center.GetY() + velocity.GetY()*t);
-	SetCenter((center.GetX() + velocity.GetX()), (center.GetY() + velocity.GetY()));
+	float newX = (center.GetX() + velocity.GetX()*t);
+	float newY = (center.GetY() + velocity.GetY()*t);
+	SetCenter(newX, newY);
 }
 

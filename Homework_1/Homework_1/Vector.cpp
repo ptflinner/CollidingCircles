@@ -1,3 +1,8 @@
+//Patrick Flinner
+//304607711
+//Date: 9/24/2017
+//Assignment: Homework 1
+
 #include "Vector.h"
 
 
@@ -45,6 +50,9 @@ float Vector::GetY()
 	return y;
 }
 
+//Overloaded operators
+
+//Vector Subtraction
 Vector Vector::operator-( Vector & rhs)
 {
 	Vector subtracted;
@@ -53,6 +61,7 @@ Vector Vector::operator-( Vector & rhs)
 	return subtracted;
 }
 
+//Vector Addition
 Vector Vector::operator+(Vector & rhs)
 {
 	Vector added;
@@ -61,6 +70,7 @@ Vector Vector::operator+(Vector & rhs)
 	return added;
 }
 
+//Dot Product
 float Vector::operator*(Vector & rhs)
 {
 	float dot;
@@ -69,6 +79,7 @@ float Vector::operator*(Vector & rhs)
 	return dot;
 }
 
+//Vector times a scalar
 Vector Vector::operator*(float& rhs)
 {
 	Vector newVector;
@@ -78,17 +89,20 @@ Vector Vector::operator*(float& rhs)
 	return newVector;
 }
 
+//Sets a vector to another
 void Vector::operator=(Vector & rhs)
 {
 	x = rhs.GetX();
 	y = rhs.GetY();
 }
 
+//Divides a vector by float value
 Vector Vector::operator/(float & rhs)
 {
 	return Vector(x/rhs,y/rhs);
 }
 
+//Prints the vector
 std::ostream & operator<<(std::ostream & os, Vector & rhs)
 {
 	os << rhs.GetX()<< " " << rhs.GetY() << std::endl;

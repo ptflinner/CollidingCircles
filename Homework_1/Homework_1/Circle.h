@@ -1,3 +1,8 @@
+//Patrick Flinner
+//304607711
+//Date: 9/24/2017
+//Assignment: Homework 1
+
 #pragma once
 #ifndef CIRCLE_PHYSICS
 #define CIRCLE_PHYSICS
@@ -12,8 +17,6 @@ private:
 	double mass;
 	Vector velocity;
 	Vector center;
-	//Used for storing velocity if object is paused
-	Vector pVelocity;
 
 public:
 	Circle();
@@ -25,7 +28,6 @@ public:
 	Vector GetVelocity();
 	void SetVelocity(Vector newVelocity);
 	void SetVelocity(float x,float y);
-	void PauseVelocity();
 	void SetCenter(float x, float y);
 	void SetCenter(Vector vector);
 	float GetCenterX();

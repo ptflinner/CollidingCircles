@@ -1,3 +1,8 @@
+//Patrick Flinner
+//304607711
+//Date: 9/24/2017
+//Assignment: Homework 1
+
 #ifndef LAB_ANIM_H
 #define LAB_ANIM_H
 
@@ -14,20 +19,33 @@
 
 //Global Variables
 
+struct ColorSet {
+	float red, blue, green;
+};
+
+ColorSet colors[5];
 Circle *circleArray[5];
 bool filled[5];
-int selected;
-int numberOfBalls;
 
+//Screen dimensions
 const int screenHeight = 480;
 const int screenWidth = 640;
+
+//Will display couts if enabled
 const bool DEBUG = false;
+
+// Global changeable values
 bool pause;
 float speedUp = 15;
 float speedDown=0.25;
-float maxRadius = 100;
+float maxRadius = 75;
 float minRadius = 10;
-// Initial values
+int mouseX;
+int mouseY;
+int selected;
+int mouseObject;
+bool mouseObjectSelected = false;
+int numberOfBalls;
 float delta;
 
 #endif
